@@ -4,12 +4,12 @@ import imageio
 #from typing import List, Dict, Tuple, Optional
 
 def perform_image_rotation(image_path: str, rotation_amount: int, output_dir: str):
-    """perform rotation on image. Works with the .tif images we have in the DRIVE dataset,
-    but the labels are in .gif which are handled in the except with mageio.mimread (need only one frame since the gif is static)
+    """perform rotation on image. Specific to the DRIVE dataset, handling the .tif images
+    and the labels are in .gif which are handled in the except with mageio.mimread (need only one frame since the gif is static)
     """
     
     img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-    if(not img.any()):
+    if(image_path.split('.')[1] == 'gif'):
         gif = imageio.mimread(image_path)  # take the first frame (numpy arrays)
         frame = gif[0]
         img = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
