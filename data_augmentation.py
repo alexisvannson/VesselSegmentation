@@ -24,8 +24,8 @@ def perform_image_rotation(image_path: str, rotation_amount: int, output_dir: st
     print(os.path.join(output_dir, f"{base_name}_rotated_by{rotation_amount}.jpg"))
     
 def perform_data_augmentation(image_dir, label_dir, output_dir):
-    os.makedirs(f'{output_dir}/{image_dir}', exist_ok=True)
-    os.makedirs(f'{output_dir}/{label_dir}', exist_ok=True)
+    os.makedirs(f'{output_dir}/images', exist_ok=True)
+    os.makedirs(f'{output_dir}/1st_manual', exist_ok=True)
     
     encoded_image_dir = os.fsencode(image_dir)
     encoded_label_dir = os.fsencode(label_dir)
@@ -33,9 +33,9 @@ def perform_data_augmentation(image_dir, label_dir, output_dir):
     for image, label in zip(os.listdir(encoded_image_dir), os.listdir(encoded_label_dir)):
         image_filename, label_filename = os.fsdecode(image), os.fsdecode(label)
         for i in range(1,360):
-            perform_image_rotation(image_dir + '/' + image_filename, rotation_amount=i, output_dir=f'{output_dir}/{image_dir}')
-            perform_image_rotation(label_dir + '/' + label_filename , rotation_amount=i, output_dir=f'{output_dir}/{label_dir}')
+            perform_image_rotation(image_dir + '/' + image_filename, rotation_amount=i, output_dir=f'{output_dir}/images')
+            perform_image_rotation(label_dir + '/' + label_filename , rotation_amount=i, output_dir=f'{output_dir}/1st_manual')
             
 
 if __name__ == "__main__":
-    perform_data_augmentation(image_dir='DRIVE/training/images', label_dir='DRIVE/training/1st_manual', output_dir='trainnig_data')
+    perform_data_augmentation(image_dir='DRIVE/training/images', label_dir='DRIVE/training/1st_manual', output_dir='trainig_data')
