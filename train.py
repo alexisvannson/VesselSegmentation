@@ -9,6 +9,7 @@ import tqdm
 
 #Module imports
 import Unet
+import datasetloader
 
 def load_dataset(resize_value=128, dataset_path='trainnig_data'):
     transform = transforms.Compose([transforms.Resize(resize_value, resize_value),
@@ -17,20 +18,19 @@ def load_dataset(resize_value=128, dataset_path='trainnig_data'):
     return dataset
 
 
-
 def train_model(model, dataset, epochs: int, output_dir: str, patience=5):
-    optimizer = optim.Adam(model.parameters(), lr=0.001) #why model params ?
-    criterion = torchmetrics.classification.Dice(average='micro') #have to check if this is the proper setup
+    optimizer = optim.Adam(model.parameters(), lr=1e-3) 
+    criterion = nn.CrossEntropyLoss() 
     best_loss = float('inf')
     for i in range(epochs):
         loss_aggregation = 0
-        for image, label in tqdm(dataset):
+        for image, label in tqdm.tqdm(dataset):
             logits = model(image)
             loss = criterion(logits, label)
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
-            loss_aggregation += loss # why loss.item()????
+            loss_aggregation += loss.item()
         avrg_loss = loss_aggregation / len(dataset)
         
         if avrg_loss < best_loss:
@@ -47,6 +47,8 @@ def train_model(model, dataset, epochs: int, output_dir: str, patience=5):
         
         
 if __name__ == "__main__":
-    dataset = load_dataset()
+    dataset = datasetloader.Datasetloader(dataset_path="training_data")
     model = Unet.MyGoatedUnet()
-    train_model(model, dataset,)
+    print("Model instance created")
+    train_model(model, dataset,10, "results")
+    print("the End")

@@ -1,2 +1,7 @@
 opencv-python
 imageio
+torch
+torchvision
+torchmetrics
+numpy<2
+tqdm

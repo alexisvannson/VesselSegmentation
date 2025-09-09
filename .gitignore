@@ -1,2 +1,3 @@
-MedImages
-trainnig_data/DRIVE
+Unet
+training_data
+__pycache__
