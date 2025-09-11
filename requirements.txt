@@ -5,3 +5,4 @@ torchvision
 torchmetrics
 numpy<2
 tqdm
+torch-summary

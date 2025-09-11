@@ -28,16 +28,12 @@ class SegmentationDataset(Dataset):
 
     def __getitem__(self, idx):
         image_path = os.path.join(self.images_path, self.images[idx])
-        print(image_path)
         label_path = os.path.join(self.label_path, self.labels[idx])
-        print(label_path)
-        print(os.path.basename(image_path))
-        print(os.path.basename(label_path))
+
         image = PIL.Image.open(image_path)
         label = PIL.Image.open(label_path)
-        image = self.img_transform(image)
-        label = self.label_transform(label)
-        return image, label
+  
+        return self.img_transform(image), self.label_transform(label)
 
 
 

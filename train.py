@@ -6,25 +6,23 @@ import torchmetrics.classification
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import tqdm
+import torchsummary
+import torch.utils.data
 
 #Module imports
-import Unet
+import unet
 import datasetloader
 
-def load_dataset(resize_value=128, dataset_path='trainnig_data'):
-    transform = transforms.Compose([transforms.Resize(resize_value, resize_value),
-                                    transforms.ToTensor()])
-    dataset = datasets.ImageFolder(dataset_path, transform= transform)  #get library for image folder
-    return dataset
 
-
-def train_model(model, dataset, epochs: int, output_dir: str, patience=5):
+def train_model(model, images_path, label_path, epochs: int, output_dir: str, patience=5):
+    dataset = datasetloader.SegmentationDataset(images_path, label_path)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, shuffle=True)
     optimizer = optim.Adam(model.parameters(), lr=1e-3) 
     criterion = nn.CrossEntropyLoss() 
     best_loss = float('inf')
     for i in range(epochs):
         loss_aggregation = 0
-        for image, label in tqdm.tqdm(dataset):
+        for image, label in tqdm.tqdm(dataloader):
             logits = model(image)
             loss = criterion(logits, label)
             loss.backward()
@@ -47,8 +45,26 @@ def train_model(model, dataset, epochs: int, output_dir: str, patience=5):
         
         
 if __name__ == "__main__":
-    dataset = datasetloader.Datasetloader(dataset_path="training_data")
-    model = Unet.MyGoatedUnet()
+    model = unet.MyGoatedUnet()
     print("Model instance created")
-    train_model(model, dataset,10, "results")
+    train_model(model, 'training_data/images', 'training_data/1st_manual', 10, "results")
     print("the End")
+"""
+    # There are several ways to speed up UNet training:
+    # 1. Use a GPU if available:
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print("Using GPU for training.")
+    else:
+        device = torch.device("cpu")
+        print("Using CPU for training.")
+    model.to(device)
+
+    # 2. In your train_model, move images and labels to the device:
+    #    (You should update train_model to move data to the device inside the training loop.)
+    # 3. Increase batch size if memory allows.
+    # 4. Use mixed precision training (torch.cuda.amp) for faster computation on modern GPUs.
+    # 5. Use num_workers > 0 in DataLoader for faster data loading.
+    # 6. Profile your data pipeline to ensure no bottlenecks.
+    # 7. Optionally, reduce model size or input resolution for faster epochs.
+    """
